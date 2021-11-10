@@ -16,7 +16,7 @@ const Notification = ({message, flag}) => {
 				<div className="notify">
 						{message}
 				</div>
-		)
+			)
 		}
 }
 

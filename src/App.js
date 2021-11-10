@@ -3,6 +3,7 @@ import Blog from './components/Blog'
 import blogService from './services/blogs'
 import loginService from './services/login'
 import LoginForm from './components/LoginForm'
+import Notification from './components/Notification'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
@@ -25,6 +26,8 @@ const App = () => {
 				username, password,
 			})
 			setUser(user)
+			setUsername('')
+			setPassword('')
 		} catch (exception) {
 			setErrorMessage('Wrong credentials')
 			setTimeout(() => {
@@ -35,6 +38,7 @@ const App = () => {
 
   return (
     <div>
+			<Notification message={errorMessage} />
 			{ user === null ?
 				<LoginForm 
 					handleLogin={handleLogin}

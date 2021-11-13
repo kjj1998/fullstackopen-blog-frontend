@@ -12,9 +12,6 @@ const App = () => {
 	const [errorMessage, setErrorMessage] = useState(null)
 	const [notificationMessage, setNotificationMessage] = useState(null)
 	const [user, setUser] = useState(null)
-	const [title, setTitle] = useState('')
-	const [url, setUrl] = useState('')
-	const [author, setAuthor] = useState('')
 
   useEffect(() => {
     blogService.getAll().then(blogs =>
@@ -35,19 +32,12 @@ const App = () => {
 
 	const login = async (username, password) => {
 		try {
-			const user = await loginService.login({
-				username, password,
-			})
-
-			window.localStorage.setItem(
-				'loggedBlogAppUser', JSON.stringify(user)
-			)
-
+			const user = await loginService.login({username, password})
+			window.localStorage.setItem('loggedBlogAppUser', JSON.stringify(user))
 			blogService.setToken(user.token)
 			setUser(user)
+			
 			setNotificationMessage('Successfully logged in')
-			
-			
 			setTimeout(() => {
 				setNotificationMessage(null)
 			}, 5000)
@@ -65,11 +55,11 @@ const App = () => {
 		try {
 			window.localStorage.removeItem('loggedBlogAppUser')
 			setUser(null)
+			blogFormRef.current.setTitle('')
+			blogFormRef.current.setAuthor('')
+			blogFormRef.current.setUrl('')
+
 			setNotificationMessage('Successfully logged out')
-			setTitle('')
-			setAuthor('')
-			setUrl('')
-			
 			setTimeout(() => {
 				setNotificationMessage(null)
 			}, 5000)
@@ -78,24 +68,13 @@ const App = () => {
 		}
 	}
 
-	const handleCreateNewBlog = async (event) => {
-		event.preventDefault()
-
+	const createNewBlog = async (blogObject) => {
 		try {
-			const blogObject = {
-				title: title,
-				author: author,
-				url: url
-			}
-
-			blogFormRef.current.toggleVisibility()
 			const returnedBlog = await blogService.create(blogObject)
+			blogFormRef.current.toggleVisibility()
 			setBlogs(blogs.concat(returnedBlog))
-			setNotificationMessage(`A new blog ${returnedBlog.title} by ${returnedBlog.author} added!`)
-			setTitle('')
-			setAuthor('')
-			setUrl('')
 			
+			setNotificationMessage(`A new blog ${returnedBlog.title} by ${returnedBlog.author} added!`)
 			setTimeout(() => {
 				setNotificationMessage(null)
 			}, 5000)
@@ -109,15 +88,7 @@ const App = () => {
 
 	const blogForm = () => (
 		<Togglable buttonLabel='create new blog' ref={blogFormRef}>
-						<CreateBlogForm
-							handleCreateNewBlog={handleCreateNewBlog}
-							title={title}
-							author={author}
-							url={url}
-							setTitle={setTitle}
-							setAuthor={setAuthor}
-							setUrl={setUrl}
-						/>
+						<CreateBlogForm createNewBlog={createNewBlog}/>
 		</Togglable>
 	)
 

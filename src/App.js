@@ -14,9 +14,11 @@ const App = () => {
 	const [user, setUser] = useState(null)
 
   useEffect(() => {
-    blogService.getAll().then(blogs =>
-      setBlogs( blogs )
-    )  
+		async function fetchData() {
+			const blogs = await blogService.getAll()
+    	setBlogs( blogs )
+		}
+		fetchData()
   }, [])
 
 	useEffect(() => {
@@ -114,7 +116,7 @@ const App = () => {
 					<p>{`${user.name} logged in`} <button type="submit" onClick={handleLogout}>logout</button></p>
       		{blogForm()}
 					{blogs.map(blog => {
-						return <Blog key={blog.id} blog={blog} />
+						return <Blog key={blog.id} blog={blog}/>
 					})
 					}
       	</div>

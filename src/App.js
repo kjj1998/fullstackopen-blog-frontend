@@ -16,6 +16,7 @@ const App = () => {
   useEffect(() => {
 		async function fetchData() {
 			const blogs = await blogService.getAll()
+			sortBlogs(blogs)
     	setBlogs( blogs )
 		}
 		fetchData()
@@ -31,6 +32,18 @@ const App = () => {
 	}, [])
 
 	const blogFormRef = useRef()
+
+	const sortBlogs = (blogs) => {
+		blogs.sort(function(a, b) {
+			if (a.likes < b.likes) {
+				return 1
+			}
+			if (a.likes > b.likes) {
+				return -1
+			}
+			return 0
+		})
+	}
 
 	const login = async (username, password) => {
 		try {
@@ -75,6 +88,8 @@ const App = () => {
 			const returnedBlog = await blogService.create(blogObject)
 			blogFormRef.current.toggleVisibility()
 			setBlogs(blogs.concat(returnedBlog))
+			sortBlogs(blogs)
+			setBlogs(blogs)
 			
 			setNotificationMessage(`A new blog ${returnedBlog.title} by ${returnedBlog.author} added!`)
 			setTimeout(() => {
@@ -100,6 +115,8 @@ const App = () => {
 					blog.likes = returnedBlog.likes
 				return blog
 			}))
+			sortBlogs(blogs)
+			setBlogs(blogs)
 
 			setNotificationMessage(`Likes of blog ${returnedBlog.title} by ${returnedBlog.author} increased by one!`)
 			setTimeout(() => {
@@ -115,7 +132,7 @@ const App = () => {
 
 	const blogForm = () => (
 		<Togglable buttonLabel='create new blog' ref={blogFormRef}>
-						<CreateBlogForm createNewBlog={createNewBlog}/>
+			<CreateBlogForm createNewBlog={createNewBlog}/>
 		</Togglable>
 	)
 

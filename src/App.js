@@ -88,6 +88,31 @@ const App = () => {
 		}
 	}
 
+	const incrementLikes = async (updatedBlogObject)	=> {
+		try {
+			const clone = JSON.parse(JSON.stringify(updatedBlogObject))
+			clone.user = clone.user.id
+			clone.likes += 1
+			const returnedBlog = await blogService.incrementLikes(clone)
+
+			setBlogs(blogs.map(blog => {
+				if (blog.id === returnedBlog.id)
+					blog.likes = returnedBlog.likes
+				return blog
+			}))
+
+			setNotificationMessage(`Likes of blog ${returnedBlog.title} by ${returnedBlog.author} increased by one!`)
+			setTimeout(() => {
+				setNotificationMessage(null)
+			}, 5000)
+		} catch(exception) {
+			setErrorMessage('Likes not increased')
+			setTimeout(() => {
+				setErrorMessage(null)
+			}, 5000)
+		}
+	}
+
 	const blogForm = () => (
 		<Togglable buttonLabel='create new blog' ref={blogFormRef}>
 						<CreateBlogForm createNewBlog={createNewBlog}/>
@@ -116,7 +141,7 @@ const App = () => {
 					<p>{`${user.name} logged in`} <button type="submit" onClick={handleLogout}>logout</button></p>
       		{blogForm()}
 					{blogs.map(blog => {
-						return <Blog key={blog.id} blog={blog}/>
+						return <Blog key={blog.id} blog={blog} incrementLikes={incrementLikes}/>
 					})
 					}
       	</div>

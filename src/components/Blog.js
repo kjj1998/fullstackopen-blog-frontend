@@ -1,5 +1,6 @@
 import React, {useState} from 'react'
-const Blog = ({blog}) => {
+
+const Blog = ({blog, incrementLikes}) => {
   const [showMore, setShowMore] = useState(false)
 
 	const blogStyle = {
@@ -14,6 +15,10 @@ const Blog = ({blog}) => {
 		setShowMore(!showMore)
 	}
 
+	const increaseLikes = () => {
+		incrementLikes(blog)
+	}
+
 	return (
 		<div style={blogStyle}>
 		{ showMore === false ?
@@ -24,7 +29,7 @@ const Blog = ({blog}) => {
 			<div>
 				{blog.title} {blog.author} <button onClick={toggleVisibility}>hide</button> <br/>
 				{blog.url} <br/>
-				likes {blog.likes} <button>like</button> <br/>
+				likes {blog.likes} <button onClick={increaseLikes}>like</button> <br/>
 				{blog.user.name} <br/>
 			</div>
 		}

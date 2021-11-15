@@ -43,7 +43,7 @@ const Blog = ({ blog, incrementLikes, nameOfCreator, removeBlog }) => {
   }
 
   return (
-    <div style={blogStyle}>
+    <div style={blogStyle} className='blog'>
       { showMore === false ?
         <div>
           {blog.title} {blog.author} <button onClick={toggleVisibility}>view</button>
@@ -61,7 +61,7 @@ const Blog = ({ blog, incrementLikes, nameOfCreator, removeBlog }) => {
   )
 }
 
-Blog.PropTypes = {
+Blog.propTypes = {
   blog: PropTypes.object.isRequired,
   incrementLikes: PropTypes.func.isRequired,
   nameOfCreator: PropTypes.string.isRequired,

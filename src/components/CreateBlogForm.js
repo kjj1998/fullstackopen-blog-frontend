@@ -65,7 +65,7 @@ const CreateBlogForm = React.forwardRef(({ createNewBlog }, ref) => {
     </div>
   )})
 
-CreateBlogForm.PropTypes = {
+CreateBlogForm.propTypes = {
   createNewBlog: PropTypes.func.isRequired
 }
 

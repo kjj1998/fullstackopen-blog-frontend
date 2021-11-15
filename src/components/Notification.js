@@ -1,6 +1,5 @@
 /* eslint-disable linebreak-style */
 import React from 'react'
-import PropTypes from 'prop-types'
 
 const Notification = ({ message, flag }) => {
   if (message === null) {
@@ -20,10 +19,6 @@ const Notification = ({ message, flag }) => {
       </div>
     )
   }
-}
-
-Notification.propTypes = {
-  message: PropTypes.string.isRequired
 }
 
 Notification.displayName = 'Notification'

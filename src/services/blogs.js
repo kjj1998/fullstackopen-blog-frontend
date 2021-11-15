@@ -31,6 +31,16 @@ const incrementLikes = async updatedObject => {
 	return response.data
 }
 
-const blogService = { getAll, create, setToken, incrementLikes}
+const removeBlog = async objectToBeDeleted => {
+	const config = {
+		headers: { Authorization: token },
+	}
+
+	const blogUrl = baseUrl + '/' + objectToBeDeleted.id
+	const response = await axios.delete(blogUrl, config, objectToBeDeleted)
+	return response.data
+}
+
+const blogService = { getAll, create, setToken, incrementLikes, removeBlog}
 
 export default blogService

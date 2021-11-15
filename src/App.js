@@ -87,9 +87,9 @@ const App = () => {
 		try {
 			const returnedBlog = await blogService.create(blogObject)
 			blogFormRef.current.toggleVisibility()
-			setBlogs(blogs.concat(returnedBlog))
-			sortBlogs(blogs)
-			setBlogs(blogs)
+			const newListOfBlogs = blogs.concat(returnedBlog)
+			sortBlogs(newListOfBlogs)
+			setBlogs(newListOfBlogs)
 			
 			setNotificationMessage(`A new blog ${returnedBlog.title} by ${returnedBlog.author} added!`)
 			setTimeout(() => {
@@ -110,13 +110,14 @@ const App = () => {
 			clone.likes += 1
 			const returnedBlog = await blogService.incrementLikes(clone)
 
-			setBlogs(blogs.map(blog => {
-				if (blog.id === returnedBlog.id)
-					blog.likes = returnedBlog.likes
-				return blog
-			}))
-			sortBlogs(blogs)
-			setBlogs(blogs)
+			const updatedListOfBlogs = 
+				blogs.map(blog => {
+					if (blog.id === returnedBlog.id)
+						blog.likes = returnedBlog.likes
+					return blog
+				})
+			sortBlogs(updatedListOfBlogs)
+			setBlogs(updatedListOfBlogs)
 
 			setNotificationMessage(`Likes of blog ${returnedBlog.title} by ${returnedBlog.author} increased by one!`)
 			setTimeout(() => {
@@ -124,6 +125,25 @@ const App = () => {
 			}, 5000)
 		} catch(exception) {
 			setErrorMessage('Likes not increased')
+			setTimeout(() => {
+				setErrorMessage(null)
+			}, 5000)
+		}
+	}
+
+	const removeBlog = async (blogObjectToBeRemoved) => {
+		try {
+			await blogService.removeBlog(blogObjectToBeRemoved)
+			const newListOfBlogs = blogs.filter(blog => blog.id !== blogObjectToBeRemoved.id)
+			sortBlogs(newListOfBlogs)
+			setBlogs(newListOfBlogs)
+
+			setNotificationMessage(`${blogObjectToBeRemoved.title} by ${blogObjectToBeRemoved.author} removed!`)
+			setTimeout(() => {
+				setNotificationMessage(null)
+			}, 5000)
+		} catch(exception) {
+			setErrorMessage('Blog not removed')
 			setTimeout(() => {
 				setErrorMessage(null)
 			}, 5000)
@@ -158,7 +178,11 @@ const App = () => {
 					<p>{`${user.name} logged in`} <button type="submit" onClick={handleLogout}>logout</button></p>
       		{blogForm()}
 					{blogs.map(blog => {
-						return <Blog key={blog.id} blog={blog} incrementLikes={incrementLikes}/>
+						return <Blog key={blog.id} 
+											blog={blog} 
+											incrementLikes={incrementLikes} 
+											nameOfCreator={user.name}
+											removeBlog={removeBlog}/>
 					})
 					}
       	</div>

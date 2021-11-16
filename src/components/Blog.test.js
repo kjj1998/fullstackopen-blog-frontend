@@ -49,3 +49,24 @@ test('clicking the view button renders url and likes', () => {
   expect(component.container).toHaveTextContent('thisisatest.com')
   expect(component.container).toHaveTextContent(0)
 })
+
+test('clicking the like button twice results in the event handler being called twice', () => {
+  const mockIncrementLikesHandler = jest.fn()
+  const mockRemoveBlogHandler = jest.fn()
+  const component = render(
+    <Blog
+      blog={blog}
+      incrementLikes={mockIncrementLikesHandler}
+      nameOfCreator='test creator'
+      removeBlog={mockRemoveBlogHandler} />
+  )
+
+  const viewButton = component.getByText('view')
+  fireEvent.click(viewButton)
+
+  const likeButton = component.getByText('like')
+  fireEvent.click(likeButton)
+  fireEvent.click(likeButton)
+
+  expect(mockIncrementLikesHandler.mock.calls).toHaveLength(2)
+})

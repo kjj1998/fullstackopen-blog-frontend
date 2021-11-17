@@ -66,7 +66,7 @@ describe('Blog app', function() {
         .and('contain', 'likes 0')
     })
 
-    describe('When a blog is created', function() {
+    describe.only('When a blog is created', function() {
       beforeEach(function() {
         cy.contains('create new blog').click()
         cy.get('#title').type('Test')
@@ -84,6 +84,34 @@ describe('Blog app', function() {
           .and('contain', 'Test Author')
           .and('contain', 'Test.com')
           .and('contain', 'likes 1')
+      })
+
+      it('A blog can be deleted', function() {
+        cy.contains('view').click()
+        cy.contains('remove').click()
+
+        cy.get('.notify')
+          .should('contain', 'Test by Test Author removed!')
+          .and('have.css', 'color', 'rgb(0, 128, 0)')
+          .and('have.css', 'border-style', 'solid')
+      })
+
+      it('A blog not created by the currently logged in user cannot be removed', function() {
+        const user2 = {
+          username: 'test2',
+          name: 'Test User2',
+          password: 'testpassword2'
+        }
+        cy.request('POST', 'http://localhost:3003/api/users/', user2)
+
+        cy.contains('logout').click()
+        cy.contains('login').click()
+        cy.get('#username').type('test2')
+        cy.get('#password').type('testpassword2')
+        cy.get('#login-button').click()
+
+        cy.contains('view').click()
+        cy.should('not.contain', 'remove')
       })
     })
   })

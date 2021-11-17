@@ -28,7 +28,6 @@ const CreateBlogForm = React.forwardRef(({ createNewBlog }, ref) => {
     }
   })
 
-
   return (
     <div>
       <h2>create new</h2>

@@ -32,5 +32,4 @@ test('correct details are received when a new blog is created', () => {
   expect(mockCreateNewBlogHandler.mock.calls[0][0].title).toBe('Diary of John Doe')
   expect(mockCreateNewBlogHandler.mock.calls[0][0].author).toBe('John Doe')
   expect(mockCreateNewBlogHandler.mock.calls[0][0].url).toBe('diaryofjohndoe.com')
-
 })

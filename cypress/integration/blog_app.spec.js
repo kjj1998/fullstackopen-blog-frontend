@@ -1,7 +1,7 @@
 /* eslint-disable linebreak-style */
 describe('Blog app', function() {
   /* Clear the data in the testing database and add in a new user for testing*/
-	beforeEach(function() {
+  beforeEach(function() {
     cy.request('POST', 'http://localhost:3003/api/testing/reset')
     const user = {
       username: 'test',
@@ -35,9 +35,35 @@ describe('Blog app', function() {
       cy.get('#password').type('wrongpassword')
       cy.get('#login-button').click()
 
-      cy.get('.error').should('contain', 'Wrong credentials')
-      cy.get('.error').should('have.css', 'color', 'rgb(255, 0, 0)')
-      cy.get('.error').should('have.css', 'border-style', 'solid')
+      cy.get('.error')
+        .should('contain', 'Wrong credentials')
+        .and('have.css', 'color', 'rgb(255, 0, 0)')
+        .and('have.css', 'border-style', 'solid')
+    })
+  })
+
+  describe('When logged in', function() {
+    /* logs in user */
+    beforeEach(function() {
+      cy.get('#username').type('test')
+      cy.get('#password').type('testpassword')
+      cy.get('#login-button').click()
+    })
+
+    it('A blog can be created', function() {
+      cy.contains('create new blog').click()
+      cy.get('#title').type('Test')
+      cy.get('#author').type('Test Author')
+      cy.get('#url').type('Test.com')
+
+      cy.get('#create').click()
+      cy.contains('view').click()
+
+      cy.get('.blog')
+        .should('contain', 'Test')
+        .and('contain', 'Test Author')
+        .and('contain', 'Test.com')
+        .and('contain', 'likes 0')
     })
   })
 })

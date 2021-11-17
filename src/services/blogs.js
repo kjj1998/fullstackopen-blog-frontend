@@ -13,6 +13,12 @@ const getAll = async () => {
   return response.data
 }
 
+const getParticularBlog = async newObject => {
+  const blogUrl = baseUrl + '/' + newObject.id
+  const response = await axios.get(blogUrl, newObject)
+  return response.data
+}
+
 const create = async newObject => {
   const config = {
     headers: { Authorization: token },
@@ -42,6 +48,6 @@ const removeBlog = async objectToBeDeleted => {
   return response.data
 }
 
-const blogService = { getAll, create, setToken, incrementLikes, removeBlog }
+const blogService = { getAll, create, setToken, incrementLikes, removeBlog, getParticularBlog }
 
 export default blogService

@@ -65,5 +65,26 @@ describe('Blog app', function() {
         .and('contain', 'Test.com')
         .and('contain', 'likes 0')
     })
+
+    describe('When a blog is created', function() {
+      beforeEach(function() {
+        cy.contains('create new blog').click()
+        cy.get('#title').type('Test')
+        cy.get('#author').type('Test Author')
+        cy.get('#url').type('Test.com')
+        cy.get('#create').click()
+      })
+
+      it('A blog can be liked', function() {
+        cy.contains('view').click()
+        cy.contains('like').click()
+
+        cy.get('.blog')
+          .should('contain', 'Test')
+          .and('contain', 'Test Author')
+          .and('contain', 'Test.com')
+          .and('contain', 'likes 1')
+      })
+    })
   })
 })

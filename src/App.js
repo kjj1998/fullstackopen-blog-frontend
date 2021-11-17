@@ -87,10 +87,18 @@ const App = () => {
   const createNewBlog = async (blogObject) => {
     try {
       const returnedBlog = await blogService.create(blogObject)
+      console.log(returnedBlog)
       blogFormRef.current.toggleVisibility()
+      //const blog = await blogService.getParticularBlog(returnedBlog.id)
+      //const blogs = await blogService.getAll()
+      //console.log(blog)
+      //sortBlogs(blogs)
+      //setBlogs(blogs)
+
       const newListOfBlogs = blogs.concat(returnedBlog)
       sortBlogs(newListOfBlogs)
       setBlogs(newListOfBlogs)
+
 
       setNotificationMessage(`A new blog ${returnedBlog.title} by ${returnedBlog.author} added!`)
       setTimeout(() => {

@@ -1,76 +1,64 @@
 /* eslint-disable linebreak-style */
-import React, { useState, useImperativeHandle } from 'react'
+import React, { useState } from 'react'
 import PropTypes from 'prop-types'
 
-const CreateBlogForm = React.forwardRef(({ createNewBlog }, ref) => {
+const NewBlog = ({ createBlog }) => {
   const [title, setTitle] = useState('')
   const [url, setUrl] = useState('')
   const [author, setAuthor] = useState('')
 
-  const handleCreateNewBlog = (event) => {
+  const handleNewBlog = (event) => {
     event.preventDefault()
 
-    const blogObject = {
-      title: title,
-      author: author,
-      url: url
-    }
+    createBlog({
+      title, author, url
+    })
 
-    createNewBlog(blogObject)
     setTitle('')
     setAuthor('')
     setUrl('')
   }
 
-  useImperativeHandle(ref, () => {
-    return {
-      setTitle, setAuthor, setUrl
-    }
-  })
-
   return (
     <div>
       <h2>create new</h2>
-      <form onSubmit={handleCreateNewBlog}>
+      <form onSubmit={handleNewBlog}>
         <div>
-				title:
+					title:
           <input
             id='title'
-            type="text"
             value={title}
-            name="Title"
+            type='text'
             onChange={({ target }) => setTitle(target.value)}
           />
         </div>
         <div>
-				author
+					author
           <input
             id='author'
-            type="text"
             value={author}
-            name="Author"
+            type='text'
             onChange={({ target }) => setAuthor(target.value)}
           />
         </div>
         <div>
-				url
+					url
           <input
             id='url'
-            type="text"
+            type='text'
             value={url}
-            name="Url"
             onChange={({ target }) => setUrl(target.value)}
           />
         </div>
-        <button id='create' type="submit">create</button>
+        <button id='create' type='submit'>create</button>
       </form>
     </div>
-  )})
+  )}
 
-CreateBlogForm.propTypes = {
-  createNewBlog: PropTypes.func.isRequired
+NewBlog.propTypes = {
+  createBlog: PropTypes.func.isRequired
 }
 
-CreateBlogForm.displayName = 'CreateBlogForm'
+NewBlog.displayName = 'NewBlog'
 
-export default CreateBlogForm
+export default NewBlog

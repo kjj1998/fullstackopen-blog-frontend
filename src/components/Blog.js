@@ -2,8 +2,9 @@
 import React, { useState } from 'react'
 import PropTypes from 'prop-types'
 
-const Blog = ({ blog, incrementLikes, nameOfCreator, removeBlog }) => {
-  const [showMore, setShowMore] = useState(false)
+const Blog = ({ blog, handleLike, handleRemove, own }) => {
+  // const [showMore, setShowMore] = useState(false)
+  const [visible, setVisible] = useState(false)
 
   const blogStyle = {
     paddingTop: 10,
@@ -13,6 +14,7 @@ const Blog = ({ blog, incrementLikes, nameOfCreator, removeBlog }) => {
     marginBottom: 5
   }
 
+  /*
   const toggleVisibility = () => {
     setShowMore(!showMore)
   }
@@ -27,7 +29,11 @@ const Blog = ({ blog, incrementLikes, nameOfCreator, removeBlog }) => {
       removeBlog(blog)
     }
   }
+	*/
 
+  const label = visible ? 'hide' : 'view'
+
+  /*
   const RemoveButton = () => {
     return (
       <div>
@@ -41,7 +47,9 @@ const Blog = ({ blog, incrementLikes, nameOfCreator, removeBlog }) => {
       </div>
     )
   }
+	*/
 
+  /*
   return (
     <div style={blogStyle} className='blog'>
       { showMore === false ?
@@ -59,13 +67,42 @@ const Blog = ({ blog, incrementLikes, nameOfCreator, removeBlog }) => {
       }
     </div>
   )
+	*/
+
+  return (
+    <div style={blogStyle} className='blog'>
+      <div>
+        <i>{blog.title}</i> by {blog.author} <button onClick={() => setVisible(!visible)}>{label}</button>
+      </div>
+      {visible && (
+        <div>
+          <div>{blog.url}</div>
+          <div>likes {blog.likes} <button onClick={() => handleLike(blog.id)}>like</button></div>
+          <div>{blog.user.name}</div>
+          {own && <button onClick={() => handleRemove(blog.id)}>remove</button>}
+        </div>
+      )}
+    </div>
+  )
 }
 
+/*
 Blog.propTypes = {
   blog: PropTypes.object.isRequired,
   incrementLikes: PropTypes.func.isRequired,
   nameOfCreator: PropTypes.string.isRequired,
   removeBlog: PropTypes.func.isRequired
+}*/
+
+Blog.propTypes = {
+  blog: PropTypes.shape({
+    title: PropTypes.string.isRequired,
+    author: PropTypes.string.isRequired,
+    url: PropTypes.string.isRequired,
+  }).isRequired,
+  handleLike: PropTypes.func.isRequired,
+  handleRemove: PropTypes.func.isRequired,
+  own: PropTypes.bool.isRequired
 }
 
 Blog.displayName = 'Blog'

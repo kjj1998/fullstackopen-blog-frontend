@@ -1,18 +1,24 @@
 /* eslint-disable linebreak-style */
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect } from 'react'
+
 import Blog from './components/Blog'
+import Notification from './components/Notification'
+import NewBlog from './components/NewBlog'
+import Togglable from './components/Togglable'
+
 import blogService from './services/blogs'
 import loginService from './services/login'
 import LoginForm from './components/LoginForm'
-import Notification from './components/Notification'
-import CreateBlogForm from './components/CreateBlogForm'
-import Togglable from './components/Togglable'
+import storage from './utils/storage'
+
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
   const [errorMessage, setErrorMessage] = useState(null)
   const [notificationMessage, setNotificationMessage] = useState(null)
   const [user, setUser] = useState(null)
+
+  const blogFormRef = React.createRef()
 
   useEffect(() => {
     async function fetchData() {
@@ -24,15 +30,19 @@ const App = () => {
   }, [])
 
   useEffect(() => {
-    const loggedBlogAppUserJSON = window.localStorage.getItem('loggedBlogAppUser')
+    /*
+		const loggedBlogAppUserJSON = window.localStorage.getItem('loggedBlogAppUser')
     if (loggedBlogAppUserJSON) {
       const user = JSON.parse(loggedBlogAppUserJSON)
       setUser(user)
       blogService.setToken(user.token)
     }
-  }, [])
+		*/
 
-  const blogFormRef = useRef()
+    const user = storage.loadUser()
+    if (user)
+      setUser(user)
+  }, [])
 
   const sortBlogs = (blogs) => {
     blogs.sort(function(a, b) {
@@ -46,12 +56,10 @@ const App = () => {
     })
   }
 
-  const login = async (username, password) => {
+  const handleLogin = async (username, password) => {
     try {
       const user = await loginService.login({ username, password })
-      window.localStorage.setItem('loggedBlogAppUser', JSON.stringify(user))
-      blogService.setToken(user.token)
-      console.log('set user')
+      storage.saveUser(user)
       setUser(user)
 
       setNotificationMessage('Successfully logged in')
@@ -70,8 +78,8 @@ const App = () => {
     event.preventDefault()
 
     try {
-      window.localStorage.removeItem('loggedBlogAppUser')
       setUser(null)
+      storage.logoutUser()
 
       setNotificationMessage('Successfully logged out')
       setTimeout(() => {
@@ -82,16 +90,16 @@ const App = () => {
     }
   }
 
-  const createNewBlog = async (blogObject) => {
+  const createBlog = async (blog) => {
     try {
-      const returnedBlog = await blogService.create(blogObject)
+      const newBlog = await blogService.create(blog)
       blogFormRef.current.toggleVisibility()
 
-      const newListOfBlogs = blogs.concat(returnedBlog)
+      const newListOfBlogs = blogs.concat(newBlog)
       sortBlogs(newListOfBlogs)
       setBlogs(newListOfBlogs)
 
-      setNotificationMessage(`A new blog ${returnedBlog.title} by ${returnedBlog.author} added!`)
+      setNotificationMessage(`A new blog ${newBlog.title} by ${newBlog.author} added!`)
       setTimeout(() => {
         setNotificationMessage(null)
       }, 5000)
@@ -103,22 +111,25 @@ const App = () => {
     }
   }
 
-  const incrementLikes = async (updatedBlogObject)	=> {
+  const handleLike = async (id)	=> {
     try {
-      const clone = JSON.parse(JSON.stringify(updatedBlogObject))
+      const blogToLike = blogs.find(b => b.id === id)
+      const likedBlog = { ...blogToLike, likes: blogToLike.likes + 1, user: blogToLike.user.id }
+      /*
+			const clone = JSON.parse(JSON.stringify(updatedBlogObject))
       clone.user = clone.user.id
       clone.likes += 1
       const returnedBlog = await blogService.incrementLikes(clone)
-
-      const updatedListOfBlogs = blogs.map(blog => {
-        if (blog.id === returnedBlog.id)
-          blog.likes = returnedBlog.likes
-        return blog
-      })
+			*/
+      await blogService.update(likedBlog)
+      const updatedListOfBlogs = blogs.map(b =>
+        b.id === id ?
+          { ...blogToLike, likes: blogToLike.likes + 1 }
+          : b )
       sortBlogs(updatedListOfBlogs)
       setBlogs(updatedListOfBlogs)
 
-      setNotificationMessage(`Likes of blog ${returnedBlog.title} by ${returnedBlog.author} increased by one!`)
+      setNotificationMessage(`Likes of blog ${blogToLike.title} by ${blogToLike.author} increased by one!`)
       setTimeout(() => {
         setNotificationMessage(null)
       }, 5000)
@@ -130,18 +141,23 @@ const App = () => {
     }
   }
 
-  const removeBlog = async (blogObjectToBeRemoved) => {
+  const handleRemove = async (id) => {
     try {
-      await blogService.removeBlog(blogObjectToBeRemoved)
-      const newListOfBlogs = blogs.filter(blog => blog.id !== blogObjectToBeRemoved.id)
-      sortBlogs(newListOfBlogs)
-      setBlogs(newListOfBlogs)
+      const blogToRemove = blogs.find(b => b.id === id)
+      const ok = window.confirm(`Remove blog ${blogToRemove.title} by ${blogToRemove.author}`)
+      if (ok) {
+        await blogService.remove(id)
+        const newListOfBlogs = blogs.filter(b => b.id !== id)
+        sortBlogs(newListOfBlogs)
+        setBlogs(newListOfBlogs)
+      }
 
-      setNotificationMessage(`${blogObjectToBeRemoved.title} by ${blogObjectToBeRemoved.author} removed!`)
+      setNotificationMessage(`${blogToRemove.title} by ${blogToRemove.author} removed!`)
       setTimeout(() => {
         setNotificationMessage(null)
       }, 5000)
     } catch(exception) {
+      console.log(exception)
       setErrorMessage('Blog not removed')
       setTimeout(() => {
         setErrorMessage(null)
@@ -149,19 +165,61 @@ const App = () => {
     }
   }
 
+  /*
   const blogForm = () => (
     <Togglable buttonLabel='create new blog' ref={blogFormRef}>
-      <CreateBlogForm createNewBlog={createNewBlog}/>
+      <CreateBlogForm createBlog={createNewBlog}/>
     </Togglable>
   )
+	*/
 
-  // eslint-disable-next-line no-unused-vars
-  const loginForm = () => (
+  /*
+	const loginForm = () => (
     <Togglable buttonLabel='login'>
-      <LoginForm login={login}/>
+      <LoginForm login={handleLogin}/>
     </Togglable>
+  )*/
+
+  if (!user) {
+    return (
+      <div>
+        <h2>login to application</h2>
+        { notificationMessage !== null ?
+          <Notification message={notificationMessage} flag={'notification'} /> :
+          <Notification message={errorMessage} flag={'error'} />
+        }
+        <LoginForm login={handleLogin}/>
+      </div>
+    )
+  }
+
+  return (
+    <div>
+      <h2>blogs</h2>
+      { notificationMessage !== null ?
+        <Notification message={notificationMessage} flag={'notification'} /> :
+        <Notification message={errorMessage} flag={'error'} />
+      }
+
+      <p>{user.name} logged in <button onClick={handleLogout}>logout</button></p>
+
+      <Togglable buttonLabel='create new blog'  ref={blogFormRef}>
+        <NewBlog createBlog={createBlog} />
+      </Togglable>
+
+      {blogs.map(blog =>
+        <Blog
+          key={blog.id}
+          blog={blog}
+          handleLike={handleLike}
+          handleRemove={handleRemove}
+          own={user.username===blog.user.username}
+        />
+      )}
+    </div>
   )
 
+  /*
   return (
     <div>
       { notificationMessage !== null ?
@@ -191,6 +249,7 @@ const App = () => {
       }
     </div>
   )
+	*/
 }
 
 export default App

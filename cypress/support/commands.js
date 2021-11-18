@@ -1,3 +1,4 @@
+/* eslint-disable linebreak-style */
 // ***********************************************
 // This example commands.js shows you how to
 // create various custom commands and overwrite
@@ -24,32 +25,24 @@
 // -- This will overwrite an existing command --
 // Cypress.Commands.overwrite('visit', (originalFn, url, options) => { ... })
 
-Cypress.Commands.add('createBlog', ({ title, author, url }) => {
-  cy.contains('create new blog').click()
-  cy.get('#title').type(title)
-  cy.get('#author').type(author)
-  cy.get('#url').type(url)
-  cy.get('#create').click()
-})
+const storageKey = 'loggedBlogAppUser'
 
 Cypress.Commands.add('login', ({ username, password }) => {
   cy.request('POST', 'http://localhost:3000/api/login', {
     username, password
-  }).then((response) => {
-    console.log(response)
-    localStorage.setItem('loggedBlogappUser', JSON.stringify(response.body))
+  }).then(({ body }) => {
+    localStorage.setItem(storageKey, JSON.stringify(body))
     cy.visit('http://localhost:3000')
   })
 })
 
-Cypress.Commands.add('createBlogPOST', ({ title, author, url }) => {
-  console.log(localStorage.getItem('loggedBlogAppUser'))
+Cypress.Commands.add('createBlog', ({ title, author, url }) => {
   cy.request({
     url: 'http://localhost:3000/api/blogs',
     method: 'POST',
-    body: { title: title, author: author, url: url },
+    body: { title, author, url },
     headers: {
-      'Authorization': `bearer ${JSON.parse(localStorage.getItem('loggedBlogAppUser').token)}`
+      'Authorization': `bearer ${JSON.parse(localStorage.getItem(storageKey)).token}`
     }
   })
 

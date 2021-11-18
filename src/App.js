@@ -51,6 +51,7 @@ const App = () => {
       const user = await loginService.login({ username, password })
       window.localStorage.setItem('loggedBlogAppUser', JSON.stringify(user))
       blogService.setToken(user.token)
+      console.log('set user')
       setUser(user)
 
       setNotificationMessage('Successfully logged in')
@@ -154,6 +155,7 @@ const App = () => {
     </Togglable>
   )
 
+  // eslint-disable-next-line no-unused-vars
   const loginForm = () => (
     <Togglable buttonLabel='login'>
       <LoginForm login={login}/>
@@ -168,21 +170,23 @@ const App = () => {
       }
       { user === null ?
         <div>
-          {loginForm()}
+          <LoginForm login={login}/>
         </div>
         :
         <div>
           <h2>blogs</h2>
           <p>{`${user.name} logged in`} <button type="submit" onClick={handleLogout}>logout</button></p>
           {blogForm()}
-          {blogs.map(blog => {
-            return <Blog key={blog.id}
-              blog={blog}
-              incrementLikes={incrementLikes}
-              nameOfCreator={user.name}
-              removeBlog={removeBlog}/>
-          })
-          }
+          <div id='blogList'>
+            {blogs.map(blog => {
+              return <Blog className="blog" key={blog.id}
+                blog={blog}
+                incrementLikes={incrementLikes}
+                nameOfCreator={user.name}
+                removeBlog={removeBlog}/>
+            })
+            }
+          </div>
         </div>
       }
     </div>

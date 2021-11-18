@@ -10,7 +10,7 @@ describe('Blog app', function() {
     }
     cy.request('POST', 'http://localhost:3003/api/users/', user)
     cy.visit('http://localhost:3000')
-    cy.contains('login').click()
+    //cy.contains('login').click()
   })
 
   it('Login form is shown', function() {
@@ -18,7 +18,6 @@ describe('Blog app', function() {
     cy.contains('username')
     cy.contains('password')
     cy.contains('login')
-    cy.contains('cancel')
   })
 
   describe('Login', function() {
@@ -45,9 +44,12 @@ describe('Blog app', function() {
   describe('When logged in', function() {
     /* logs in user */
     beforeEach(function() {
+
       cy.get('#username').type('test')
       cy.get('#password').type('testpassword')
       cy.get('#login-button').click()
+
+      //cy.login({ username: 'test', password: 'testpassword' })
     })
 
     it('A blog can be created', function() {
@@ -66,7 +68,7 @@ describe('Blog app', function() {
         .and('contain', 'likes 0')
     })
 
-    describe.only('When a blog is created', function() {
+    describe('When a blog is created', function() {
       beforeEach(function() {
         cy.contains('create new blog').click()
         cy.get('#title').type('Test')
@@ -112,6 +114,50 @@ describe('Blog app', function() {
 
         cy.contains('view').click()
         cy.should('not.contain', 'remove')
+      })
+    })
+
+
+    describe('When multiple blogs are created', function() {
+      beforeEach(function() {
+        cy.contains('create new blog').click()
+        cy.get('#title').type('Test Blog 1')
+        cy.get('#author').type('Author 1')
+        cy.get('#url').type('TestBlog1.com')
+        cy.get('#create').click()
+
+        cy.contains('create new blog').click()
+        cy.get('#title').type('Test Blog 2')
+        cy.get('#author').type('Author 2')
+        cy.get('#url').type('TestBlog2.com')
+        cy.get('#create').click()
+
+        cy.contains('create new blog').click()
+        cy.get('#title').type('Test Blog 3')
+        cy.get('#author').type('Author 3')
+        cy.get('#url').type('TestBlog3.com')
+        cy.get('#create').click()
+      })
+
+      it('Blogs are ordered according to likes', function() {
+        cy.contains('Test Blog 1 Author 1').find('button').click()
+        cy.contains('Test Blog 1').get('#like').click()
+
+        cy.contains('Test Blog 2 Author 2').contains('view').click()
+        cy.contains('Test Blog 2 Author 2').contains('like').click()
+        cy.contains('Test Blog 2 Author 2').contains('like').click()
+
+
+        cy.contains('Test Blog 3 Author 3').contains('view').click()
+        cy.contains('Test Blog 3 Author 3').contains('like').click()
+        cy.contains('Test Blog 3 Author 3').contains('like').click()
+        cy.contains('Test Blog 3 Author 3').contains('like').click()
+
+        let i = 3
+        cy.get('.blog').each(($el) => {
+          cy.wrap($el[0]).contains(`likes ${i}`)
+          i = i - 1
+        })
       })
     })
   })

@@ -44,17 +44,10 @@ describe('Blog app', function() {
   describe('When logged in', function() {
     /* logs in user */
     beforeEach(function() {
-
-      /*
-      cy.get('#username').type('test')
-      cy.get('#password').type('testpassword')
-      cy.get('#login-button').click()
-			*/
-
       cy.login({ username: 'test1', password: 'testpassword1' })
     })
 
-    it('A blog can be created', function() {
+    it.only('A blog can be created', function() {
       cy.contains('create new blog').click()
       cy.get('#title').type('Readable Cypress.io tests')
       cy.get('#author').type('Gleb Bahmutov')
@@ -115,7 +108,6 @@ describe('Blog app', function() {
       it('The creator can delete a blog', function() {
         cy.get('@blog3').contains('view').click()
         cy.get('@blog3').contains('remove').click()
-        // cy.visit('http://localhost:3000')
         cy.should('not.contain', 'test3')
 
         cy.get('@blog2').contains('view').click()

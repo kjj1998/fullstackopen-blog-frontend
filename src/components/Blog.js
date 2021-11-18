@@ -3,7 +3,6 @@ import React, { useState } from 'react'
 import PropTypes from 'prop-types'
 
 const Blog = ({ blog, handleLike, handleRemove, own }) => {
-  // const [showMore, setShowMore] = useState(false)
   const [visible, setVisible] = useState(false)
 
   const blogStyle = {
@@ -14,60 +13,7 @@ const Blog = ({ blog, handleLike, handleRemove, own }) => {
     marginBottom: 5
   }
 
-  /*
-  const toggleVisibility = () => {
-    setShowMore(!showMore)
-  }
-
-  const increaseLikes = () => {
-    incrementLikes(blog)
-  }
-
-  const remove = () => {
-    const result = window.confirm(`Remove blog ${blog.title} by ${blog.author}`)
-    if (result) {
-      removeBlog(blog)
-    }
-  }
-	*/
-
   const label = visible ? 'hide' : 'view'
-
-  /*
-  const RemoveButton = () => {
-    return (
-      <div>
-        { nameOfCreator === blog.user.name ?
-          <div>
-            <button onClick={remove}>remove</button>
-          </div>
-          :
-          null
-        }
-      </div>
-    )
-  }
-	*/
-
-  /*
-  return (
-    <div style={blogStyle} className='blog'>
-      { showMore === false ?
-        <div>
-          {blog.title} {blog.author} <button onClick={toggleVisibility}>view</button>
-        </div>
-        :
-        <div>
-          {blog.title} {blog.author} <button onClick={toggleVisibility}>hide</button> <br/>
-          {blog.url} <br/>
-				likes {blog.likes} <button id='like' onClick={increaseLikes}>like</button> <br/>
-          {blog.user.name} <br/>
-          <RemoveButton />
-        </div>
-      }
-    </div>
-  )
-	*/
 
   return (
     <div style={blogStyle} className='blog'>
@@ -85,14 +31,6 @@ const Blog = ({ blog, handleLike, handleRemove, own }) => {
     </div>
   )
 }
-
-/*
-Blog.propTypes = {
-  blog: PropTypes.object.isRequired,
-  incrementLikes: PropTypes.func.isRequired,
-  nameOfCreator: PropTypes.string.isRequired,
-  removeBlog: PropTypes.func.isRequired
-}*/
 
 Blog.propTypes = {
   blog: PropTypes.shape({

@@ -30,14 +30,6 @@ const App = () => {
   }, [])
 
   useEffect(() => {
-    /*
-		const loggedBlogAppUserJSON = window.localStorage.getItem('loggedBlogAppUser')
-    if (loggedBlogAppUserJSON) {
-      const user = JSON.parse(loggedBlogAppUserJSON)
-      setUser(user)
-      blogService.setToken(user.token)
-    }
-		*/
 
     const user = storage.loadUser()
     if (user)
@@ -115,12 +107,7 @@ const App = () => {
     try {
       const blogToLike = blogs.find(b => b.id === id)
       const likedBlog = { ...blogToLike, likes: blogToLike.likes + 1, user: blogToLike.user.id }
-      /*
-			const clone = JSON.parse(JSON.stringify(updatedBlogObject))
-      clone.user = clone.user.id
-      clone.likes += 1
-      const returnedBlog = await blogService.incrementLikes(clone)
-			*/
+
       await blogService.update(likedBlog)
       const updatedListOfBlogs = blogs.map(b =>
         b.id === id ?
@@ -165,21 +152,6 @@ const App = () => {
     }
   }
 
-  /*
-  const blogForm = () => (
-    <Togglable buttonLabel='create new blog' ref={blogFormRef}>
-      <CreateBlogForm createBlog={createNewBlog}/>
-    </Togglable>
-  )
-	*/
-
-  /*
-	const loginForm = () => (
-    <Togglable buttonLabel='login'>
-      <LoginForm login={handleLogin}/>
-    </Togglable>
-  )*/
-
   if (!user) {
     return (
       <div>
@@ -218,38 +190,6 @@ const App = () => {
       )}
     </div>
   )
-
-  /*
-  return (
-    <div>
-      { notificationMessage !== null ?
-        <Notification message={notificationMessage} flag={'notification'} /> :
-        <Notification message={errorMessage} flag={'error'} />
-      }
-      { user === null ?
-        <div>
-          <LoginForm login={login}/>
-        </div>
-        :
-        <div>
-          <h2>blogs</h2>
-          <p>{`${user.name} logged in`} <button type="submit" onClick={handleLogout}>logout</button></p>
-          {blogForm()}
-          <div id='blogList'>
-            {blogs.map(blog => {
-              return <Blog className="blog" key={blog.id}
-                blog={blog}
-                incrementLikes={incrementLikes}
-                nameOfCreator={user.name}
-                removeBlog={removeBlog}/>
-            })
-            }
-          </div>
-        </div>
-      }
-    </div>
-  )
-	*/
 }
 
 export default App

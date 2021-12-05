@@ -1,5 +1,5 @@
 /* eslint-disable linebreak-style */
-import React, { useState, useEffect } from 'react'
+import React, { useEffect } from 'react'
 
 import Blog from './components/Blog'
 import Notification from './components/Notification'
@@ -11,14 +11,15 @@ import { setNotification } from './reducers/notificationReducer'
 import { useSelector, useDispatch } from 'react-redux'
 import { initializeBlogs, newBlog, likeBlog, removeBlog } from './reducers/blogReducer'
 import { initializeUser, loginUser, logoutUser } from './reducers/userReducer'
+import { setError } from './reducers/errorReducer'
 
 const App = () => {
   const dispatch = useDispatch()
+
   const notification = useSelector(state => state.notification)
   const blogs = useSelector(state => state.blogs)
   const user = useSelector(state => state.user)
-
-  const [errorMessage, setErrorMessage] = useState(null)
+  const error = useSelector(state => state.error)
 
   const blogFormRef = React.createRef()
 
@@ -36,10 +37,8 @@ const App = () => {
       dispatch(setNotification('Successfully logged in'))
       console.log(notification)
     } catch (exception) {
-      setErrorMessage('Wrong credentials')
-      setTimeout(() => {
-        setErrorMessage(null)
-      }, 5000)
+      console.log(exception)
+      dispatch(setError('Wrong credentials'))
     }
   }
 
@@ -50,6 +49,7 @@ const App = () => {
       dispatch(setNotification('Successfully logged out'))
     } catch(exception) {
       console.log(exception)
+      dispatch(setError('Unable to logout'))
     }
   }
 
@@ -60,10 +60,7 @@ const App = () => {
       dispatch(setNotification(`A new blog ${blog.title} by ${blog.author} added!`))
     } catch(exception) {
       console.log(exception)
-      setErrorMessage('Blog not added')
-      setTimeout(() => {
-        setErrorMessage(null)
-      }, 5000)
+      dispatch(setError('Blog not added'))
     }
   }
 
@@ -72,10 +69,8 @@ const App = () => {
       dispatch(likeBlog(blog))
       dispatch(setNotification(`Likes of blog ${blog.title} by ${blog.author} increased by one!`))
     } catch(exception) {
-      setErrorMessage('Likes not increased')
-      setTimeout(() => {
-        setErrorMessage(null)
-      }, 5000)
+      console.log(exception)
+      dispatch(setError('Likes not increased'))
     }
   }
 
@@ -85,10 +80,8 @@ const App = () => {
       dispatch(removeBlog(blogToRemove))
       dispatch(setNotification(`${blogToRemove.title} by ${blogToRemove.author} removed!`))
     } catch(exception) {
-      setErrorMessage('Blog not removed')
-      setTimeout(() => {
-        setErrorMessage(null)
-      }, 5000)
+      console.log(error)
+      dispatch(setError('Blog not removed'))
     }
   }
 
@@ -98,7 +91,7 @@ const App = () => {
         <h2>login to application</h2>
         { notification !== null ?
           <Notification message={notification} flag={'notification'} /> :
-          <Notification message={errorMessage} flag={'error'} />
+          <Notification message={error} flag={'error'} />
         }
         <LoginForm login={handleLogin}/>
       </div>
@@ -110,7 +103,7 @@ const App = () => {
       <h2>blogs</h2>
       { notification !== null ?
         <Notification message={notification} flag={'notification'} /> :
-        <Notification message={errorMessage} flag={'error'} />
+        <Notification message={error} flag={'error'} />
       }
 
       <p>{user.name} logged in <button onClick={handleLogout}>logout</button></p>

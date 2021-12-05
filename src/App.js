@@ -5,22 +5,20 @@ import Blog from './components/Blog'
 import Notification from './components/Notification'
 import NewBlog from './components/NewBlog'
 import Togglable from './components/Togglable'
-
-import loginService from './services/login'
 import LoginForm from './components/LoginForm'
-import storage from './utils/storage'
 
 import { setNotification } from './reducers/notificationReducer'
 import { useSelector, useDispatch } from 'react-redux'
 import { initializeBlogs, newBlog, likeBlog, removeBlog } from './reducers/blogReducer'
+import { initializeUser, loginUser, logoutUser } from './reducers/userReducer'
 
 const App = () => {
   const dispatch = useDispatch()
   const notification = useSelector(state => state.notification)
   const blogs = useSelector(state => state.blogs)
+  const user = useSelector(state => state.user)
 
   const [errorMessage, setErrorMessage] = useState(null)
-  const [user, setUser] = useState(null)
 
   const blogFormRef = React.createRef()
 
@@ -29,17 +27,12 @@ const App = () => {
   }, [dispatch])
 
   useEffect(() => {
-    const user = storage.loadUser()
-    if (user)
-      setUser(user)
+    dispatch(initializeUser())
   }, [])
 
   const handleLogin = async (username, password) => {
     try {
-      const user = await loginService.login({ username, password })
-      storage.saveUser(user)
-      setUser(user)
-
+      dispatch(loginUser(username, password))
       dispatch(setNotification('Successfully logged in'))
       console.log(notification)
     } catch (exception) {
@@ -52,13 +45,9 @@ const App = () => {
 
   const handleLogout = async (event) => {
     event.preventDefault()
-
     try {
-      setUser(null)
-      storage.logoutUser()
-
+      dispatch(logoutUser())
       dispatch(setNotification('Successfully logged out'))
-
     } catch(exception) {
       console.log(exception)
     }

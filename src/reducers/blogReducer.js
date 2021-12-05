@@ -6,7 +6,17 @@ const blogReducer = (state = [], action) => {
   case 'INIT_BLOGS':
     return action.data.sort(byLikes)
   case 'NEW_BLOG':
-    return [...state, action.data].sort(byLikes)
+    return [...state, action.data]
+  case 'LIKE_BLOG': {
+    const likedBlog = action.data
+    const updatedBlogs = state.map(
+      blog => blog.id !== likedBlog.id ? blog : likedBlog)
+    return updatedBlogs.sort(byLikes)
+  }
+  case 'REMOVE_BLOG': {
+    const removedBlog = action.data
+    return state.filter(blog => blog.id !== removedBlog.id)
+  }
   default:
     return state
   }
@@ -30,6 +40,33 @@ export const newBlog = (blog) => {
     dispatch({
       type: 'NEW_BLOG',
       data: newBlog
+    })
+  }
+}
+
+export const likeBlog = (blog) => {
+  return async dispatch => {
+    const userObject = blog.user
+    const likedBlog = { ...blog, likes: blog.likes + 1, user: blog.user.id }
+    await blogService.update(likedBlog)
+    likedBlog.user = userObject
+    dispatch({
+      type: 'LIKE_BLOG',
+      data: likedBlog
+    })
+  }
+}
+
+export const removeBlog = (blogToRemove) => {
+  return async dispatch => {
+    const ok = window.confirm(`Remove blog ${blogToRemove.title} by ${blogToRemove.author}`)
+    if (ok) {
+      await blogService.remove(blogToRemove.id)
+    }
+
+    dispatch({
+      type: 'REMOVE_BLOG',
+      data: blogToRemove
     })
   }
 }

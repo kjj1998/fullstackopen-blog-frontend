@@ -6,21 +6,19 @@ import Notification from './components/Notification'
 import NewBlog from './components/NewBlog'
 import Togglable from './components/Togglable'
 
-import blogService from './services/blogs'
 import loginService from './services/login'
 import LoginForm from './components/LoginForm'
 import storage from './utils/storage'
 
 import { setNotification } from './reducers/notificationReducer'
 import { useSelector, useDispatch } from 'react-redux'
-import { initializeBlogs, newBlog } from './reducers/blogReducer'
+import { initializeBlogs, newBlog, likeBlog, removeBlog } from './reducers/blogReducer'
 
 const App = () => {
   const dispatch = useDispatch()
   const notification = useSelector(state => state.notification)
   const blogs = useSelector(state => state.blogs)
 
-  // const [blogs, setBlogs] = useState([])
   const [errorMessage, setErrorMessage] = useState(null)
   const [user, setUser] = useState(null)
 
@@ -35,18 +33,6 @@ const App = () => {
     if (user)
       setUser(user)
   }, [])
-
-  const sortBlogs = (blogs) => {
-    blogs.sort(function(a, b) {
-      if (a.likes < b.likes) {
-        return 1
-      }
-      if (a.likes > b.likes) {
-        return -1
-      }
-      return 0
-    })
-  }
 
   const handleLogin = async (username, password) => {
     try {
@@ -82,11 +68,6 @@ const App = () => {
     try {
       dispatch(newBlog(blog))
       blogFormRef.current.toggleVisibility()
-
-      // const newListOfBlogs = blogs.concat(newBlog)
-      // sortBlogs(newListOfBlogs)
-      // setBlogs(newListOfBlogs)
-
       dispatch(setNotification(`A new blog ${blog.title} by ${blog.author} added!`))
     } catch(exception) {
       console.log(exception)
@@ -97,22 +78,11 @@ const App = () => {
     }
   }
 
-  const handleLike = async (id)	=> {
+  const handleLike = async (blog)	=> {
     try {
-      const blogToLike = blogs.find(b => b.id === id)
-      const likedBlog = { ...blogToLike, likes: blogToLike.likes + 1, user: blogToLike.user.id }
-
-      await blogService.update(likedBlog)
-      const updatedListOfBlogs = blogs.map(b =>
-        b.id === id ?
-          { ...blogToLike, likes: blogToLike.likes + 1 }
-          : b )
-      sortBlogs(updatedListOfBlogs)
-      // setBlogs(updatedListOfBlogs)
-
-      dispatch(setNotification(`Likes of blog ${blogToLike.title} by ${blogToLike.author} increased by one!`))
+      dispatch(likeBlog(blog))
+      dispatch(setNotification(`Likes of blog ${blog.title} by ${blog.author} increased by one!`))
     } catch(exception) {
-      console.log(exception)
       setErrorMessage('Likes not increased')
       setTimeout(() => {
         setErrorMessage(null)
@@ -123,17 +93,9 @@ const App = () => {
   const handleRemove = async (id) => {
     try {
       const blogToRemove = blogs.find(b => b.id === id)
-      const ok = window.confirm(`Remove blog ${blogToRemove.title} by ${blogToRemove.author}`)
-      if (ok) {
-        await blogService.remove(id)
-        const newListOfBlogs = blogs.filter(b => b.id !== id)
-        sortBlogs(newListOfBlogs)
-        // setBlogs(newListOfBlogs)
-      }
-
+      dispatch(removeBlog(blogToRemove))
       dispatch(setNotification(`${blogToRemove.title} by ${blogToRemove.author} removed!`))
     } catch(exception) {
-      console.log(exception)
       setErrorMessage('Blog not removed')
       setTimeout(() => {
         setErrorMessage(null)

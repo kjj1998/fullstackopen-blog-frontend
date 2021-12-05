@@ -11,11 +11,15 @@ import loginService from './services/login'
 import LoginForm from './components/LoginForm'
 import storage from './utils/storage'
 
+import { setNotification } from './reducers/notificationReducer'
+import { useSelector, useDispatch } from 'react-redux'
 
 const App = () => {
+  const dispatch = useDispatch()
+  const notification = useSelector(state => state.notification)
+
   const [blogs, setBlogs] = useState([])
   const [errorMessage, setErrorMessage] = useState(null)
-  const [notificationMessage, setNotificationMessage] = useState(null)
   const [user, setUser] = useState(null)
 
   const blogFormRef = React.createRef()
@@ -30,7 +34,6 @@ const App = () => {
   }, [])
 
   useEffect(() => {
-
     const user = storage.loadUser()
     if (user)
       setUser(user)
@@ -54,10 +57,8 @@ const App = () => {
       storage.saveUser(user)
       setUser(user)
 
-      setNotificationMessage('Successfully logged in')
-      setTimeout(() => {
-        setNotificationMessage(null)
-      }, 5000)
+      dispatch(setNotification('Successfully logged in'))
+      console.log(notification)
     } catch (exception) {
       setErrorMessage('Wrong credentials')
       setTimeout(() => {
@@ -73,10 +74,8 @@ const App = () => {
       setUser(null)
       storage.logoutUser()
 
-      setNotificationMessage('Successfully logged out')
-      setTimeout(() => {
-        setNotificationMessage(null)
-      }, 5000)
+      dispatch(setNotification('Successfully logged out'))
+
     } catch(exception) {
       console.log(exception)
     }
@@ -91,10 +90,7 @@ const App = () => {
       sortBlogs(newListOfBlogs)
       setBlogs(newListOfBlogs)
 
-      setNotificationMessage(`A new blog ${newBlog.title} by ${newBlog.author} added!`)
-      setTimeout(() => {
-        setNotificationMessage(null)
-      }, 5000)
+      dispatch(setNotification(`A new blog ${newBlog.title} by ${newBlog.author} added!`))
     } catch(exception) {
       setErrorMessage('Blog not added')
       setTimeout(() => {
@@ -116,11 +112,9 @@ const App = () => {
       sortBlogs(updatedListOfBlogs)
       setBlogs(updatedListOfBlogs)
 
-      setNotificationMessage(`Likes of blog ${blogToLike.title} by ${blogToLike.author} increased by one!`)
-      setTimeout(() => {
-        setNotificationMessage(null)
-      }, 5000)
+      dispatch(setNotification(`Likes of blog ${blogToLike.title} by ${blogToLike.author} increased by one!`))
     } catch(exception) {
+      console.log(exception)
       setErrorMessage('Likes not increased')
       setTimeout(() => {
         setErrorMessage(null)
@@ -139,10 +133,7 @@ const App = () => {
         setBlogs(newListOfBlogs)
       }
 
-      setNotificationMessage(`${blogToRemove.title} by ${blogToRemove.author} removed!`)
-      setTimeout(() => {
-        setNotificationMessage(null)
-      }, 5000)
+      dispatch(setNotification(`${blogToRemove.title} by ${blogToRemove.author} removed!`))
     } catch(exception) {
       console.log(exception)
       setErrorMessage('Blog not removed')
@@ -156,8 +147,8 @@ const App = () => {
     return (
       <div>
         <h2>login to application</h2>
-        { notificationMessage !== null ?
-          <Notification message={notificationMessage} flag={'notification'} /> :
+        { notification !== null ?
+          <Notification message={notification} flag={'notification'} /> :
           <Notification message={errorMessage} flag={'error'} />
         }
         <LoginForm login={handleLogin}/>
@@ -168,8 +159,8 @@ const App = () => {
   return (
     <div>
       <h2>blogs</h2>
-      { notificationMessage !== null ?
-        <Notification message={notificationMessage} flag={'notification'} /> :
+      { notification !== null ?
+        <Notification message={notification} flag={'notification'} /> :
         <Notification message={errorMessage} flag={'error'} />
       }
 

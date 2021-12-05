@@ -13,25 +13,22 @@ import storage from './utils/storage'
 
 import { setNotification } from './reducers/notificationReducer'
 import { useSelector, useDispatch } from 'react-redux'
+import { initializeBlogs, newBlog } from './reducers/blogReducer'
 
 const App = () => {
   const dispatch = useDispatch()
   const notification = useSelector(state => state.notification)
+  const blogs = useSelector(state => state.blogs)
 
-  const [blogs, setBlogs] = useState([])
+  // const [blogs, setBlogs] = useState([])
   const [errorMessage, setErrorMessage] = useState(null)
   const [user, setUser] = useState(null)
 
   const blogFormRef = React.createRef()
 
   useEffect(() => {
-    async function fetchData() {
-      const blogs = await blogService.getAll()
-      sortBlogs(blogs)
-      setBlogs( blogs )
-    }
-    fetchData()
-  }, [])
+    dispatch(initializeBlogs())
+  }, [dispatch])
 
   useEffect(() => {
     const user = storage.loadUser()
@@ -83,15 +80,16 @@ const App = () => {
 
   const createBlog = async (blog) => {
     try {
-      const newBlog = await blogService.create(blog)
+      dispatch(newBlog(blog))
       blogFormRef.current.toggleVisibility()
 
-      const newListOfBlogs = blogs.concat(newBlog)
-      sortBlogs(newListOfBlogs)
-      setBlogs(newListOfBlogs)
+      // const newListOfBlogs = blogs.concat(newBlog)
+      // sortBlogs(newListOfBlogs)
+      // setBlogs(newListOfBlogs)
 
-      dispatch(setNotification(`A new blog ${newBlog.title} by ${newBlog.author} added!`))
+      dispatch(setNotification(`A new blog ${blog.title} by ${blog.author} added!`))
     } catch(exception) {
+      console.log(exception)
       setErrorMessage('Blog not added')
       setTimeout(() => {
         setErrorMessage(null)
@@ -110,7 +108,7 @@ const App = () => {
           { ...blogToLike, likes: blogToLike.likes + 1 }
           : b )
       sortBlogs(updatedListOfBlogs)
-      setBlogs(updatedListOfBlogs)
+      // setBlogs(updatedListOfBlogs)
 
       dispatch(setNotification(`Likes of blog ${blogToLike.title} by ${blogToLike.author} increased by one!`))
     } catch(exception) {
@@ -130,7 +128,7 @@ const App = () => {
         await blogService.remove(id)
         const newListOfBlogs = blogs.filter(b => b.id !== id)
         sortBlogs(newListOfBlogs)
-        setBlogs(newListOfBlogs)
+        // setBlogs(newListOfBlogs)
       }
 
       dispatch(setNotification(`${blogToRemove.title} by ${blogToRemove.author} removed!`))

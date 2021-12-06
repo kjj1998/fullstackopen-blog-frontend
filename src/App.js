@@ -4,11 +4,9 @@ import {
   Routes , Route
 } from 'react-router-dom'
 
-import Blog from './components/Blog'
 import Notification from './components/Notification'
-import NewBlog from './components/NewBlog'
-import Togglable from './components/Togglable'
 import LoginForm from './components/LoginForm'
+import BasicInfo from './components/BasicInfo'
 
 import { setNotification } from './reducers/notificationReducer'
 import { useSelector, useDispatch } from 'react-redux'
@@ -16,6 +14,7 @@ import { initializeBlogs, newBlog, likeBlog, removeBlog } from './reducers/blogR
 import { initializeUser, loginUser, logoutUser } from './reducers/userReducer'
 import { setError } from './reducers/errorReducer'
 import { initializeUsers } from './reducers/allUsersReducer'
+import IndexPage from './components/IndexPage'
 
 const App = () => {
   const dispatch = useDispatch()
@@ -116,47 +115,16 @@ const App = () => {
       <p><button onClick={handleLogout}>logout</button></p>
 
       <Routes>
-        <Route path="/users" element={
-          <div>
-            <h2>Users</h2>
-            <table>
-              <thead>
-                <tr>
-                  <th></th>
-                  <th><strong>blogs created</strong></th>
-                </tr>
-              </thead>
-              <tbody>
-                {allUsers.map(u => {
-                  return (
-                    <tr key={u.id}>
-                      <td>{u.name}</td>
-                      <td>{u.blogs.length}</td>
-                    </tr>
-                  )
-                })}
-              </tbody>
-            </table>
-          </div>
-        }>
-        </Route>
+        <Route path="/users" element={<BasicInfo allUsers={allUsers}/>} />
         <Route path="/" element={
-          <div>
-            <Togglable buttonLabel='create new blog'  ref={blogFormRef}>
-              <NewBlog createBlog={createBlog} />
-            </Togglable>
-            {blogs.map(blog =>
-              <Blog
-                key={blog.id}
-                blog={blog}
-                handleLike={handleLike}
-                handleRemove={handleRemove}
-                own={user.username===blog.user.username}
-              />
-            )}
-          </div>
-        }>
-        </Route>
+          <IndexPage
+            blogFormRef={blogFormRef}
+            createBlog={createBlog}
+            blogs= {blogs}
+            handleLike = {handleLike}
+            handleRemove = {handleRemove}
+            user = {user} />}
+        />
       </Routes>
     </div>
   )

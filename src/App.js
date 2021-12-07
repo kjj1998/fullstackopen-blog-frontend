@@ -13,7 +13,7 @@ import Blog from './components/Blog'
 
 import { setNotification } from './reducers/notificationReducer'
 import { useSelector, useDispatch } from 'react-redux'
-import { initializeBlogs, newBlog, likeBlog, removeBlog } from './reducers/blogReducer'
+import { initializeBlogs, newBlog, likeBlog, removeBlog, addComment } from './reducers/blogReducer'
 import { initializeUser, loginUser, logoutUser } from './reducers/userReducer'
 import { setError } from './reducers/errorReducer'
 import { initializeUsers } from './reducers/allUsersReducer'
@@ -95,6 +95,16 @@ const App = () => {
     }
   }
 
+  const handleComment = async (id, comment) => {
+    try {
+      dispatch(addComment(id, comment))
+      dispatch(setNotification(`added ${comment} as comment!`))
+    } catch(exception) {
+      console.log(error)
+      dispatch(setError('Comment not added'))
+    }
+  }
+
   const userIDMatch = useMatch('/users/:id')
   const matchedUser = userIDMatch
     ? allUsers.find(u => u.id === userIDMatch.params.id)
@@ -145,9 +155,12 @@ const App = () => {
         <Route path="/blogs/:id"
           element={<Blog
             blog={matchedBlog}
+            blogs={blogs}
             handleLike={handleLike}
             handleRemove={handleRemove}
-            loggedInUser={user} />} />
+            loggedInUser={user}
+            addComment={handleComment} />}
+        />
         <Route path="/users" element={<BasicInfo allUsers={allUsers}/>} />
         <Route path="/" element={
           <IndexPage

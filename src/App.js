@@ -1,7 +1,8 @@
 /* eslint-disable linebreak-style */
 import React, { useEffect } from 'react'
 import {
-  Routes , Route
+  Routes , Route,
+  useMatch
 } from 'react-router-dom'
 
 import Notification from './components/Notification'
@@ -90,6 +91,11 @@ const App = () => {
     }
   }
 
+  const userIDMatch = useMatch('/users/:id')
+  const matchedUser = userIDMatch
+    ? allUsers.find(u => u.id === userIDMatch.params.id)
+    : null
+
   if (!user) {
     return (
       <div>
@@ -115,7 +121,7 @@ const App = () => {
       <p><button onClick={handleLogout}>logout</button></p>
 
       <Routes>
-        <Route path="/users/:id" element={<User user={user} users={allUsers} />} />
+        <Route path="/users/:id" element={<User user={matchedUser} />} />
         <Route path="/users" element={<BasicInfo allUsers={allUsers}/>} />
         <Route path="/" element={
           <IndexPage

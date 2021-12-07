@@ -1,21 +1,18 @@
 /* eslint-disable linebreak-style */
 import React from 'react'
-import { useParams } from 'react-router-dom'
 
-const User = ({ users }) => {
-  const id = useParams().id
-  const selectedUser = users.find( u => u.id === id)
 
-  if (!selectedUser) {
+const User = ({ user }) => {
+  if (!user) {
     return null
   }
 
   return (
     <div>
-      <h2>{selectedUser.name}</h2>
+      <h2>{user.name}</h2>
       <p><strong>added blogs</strong></p>
       <ul>
-        {selectedUser.blogs.map( blog => {
+        {user.blogs.map( blog => {
           return (
             <li key={blog.id}>{blog.title}</li>
           )

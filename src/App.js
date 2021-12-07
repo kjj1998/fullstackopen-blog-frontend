@@ -15,6 +15,7 @@ import { initializeUser, loginUser, logoutUser } from './reducers/userReducer'
 import { setError } from './reducers/errorReducer'
 import { initializeUsers } from './reducers/allUsersReducer'
 import IndexPage from './components/IndexPage'
+import User from './components/User'
 
 const App = () => {
   const dispatch = useDispatch()
@@ -40,7 +41,6 @@ const App = () => {
     try {
       dispatch(loginUser(username, password))
       dispatch(setNotification('Successfully logged in'))
-      console.log(notification)
     } catch (exception) {
       console.log(exception)
       dispatch(setError('Wrong credentials'))
@@ -115,6 +115,7 @@ const App = () => {
       <p><button onClick={handleLogout}>logout</button></p>
 
       <Routes>
+        <Route path="/users/:id" element={<User user={user} users={allUsers} />} />
         <Route path="/users" element={<BasicInfo allUsers={allUsers}/>} />
         <Route path="/" element={
           <IndexPage

@@ -1,5 +1,6 @@
 /* eslint-disable linebreak-style */
 import React from 'react'
+import { Link } from 'react-router-dom'
 
 const BasicInfo = ({ allUsers }) => {
   return(
@@ -16,7 +17,7 @@ const BasicInfo = ({ allUsers }) => {
           {allUsers.map(u => {
             return (
               <tr key={u.id}>
-                <td>{u.name}</td>
+                <td><Link to={`/users/${u.id}`}>{u.name}</Link></td>
                 <td>{u.blogs.length}</td>
               </tr>)
           })}

@@ -2,7 +2,7 @@
 import React, { useEffect } from 'react'
 import {
   Routes , Route,
-  useMatch, useNavigate
+  useMatch, useNavigate, Link
 } from 'react-router-dom'
 
 import Notification from './components/Notification'
@@ -118,16 +118,27 @@ const App = () => {
     )
   }
 
+  const padding = { padding: 5 }
+
   return (
     <div>
-      <h2>blogs</h2>
+      <div>
+        <Link style={padding} to="/">blogs</Link>
+        <Link style={padding} to="/users">users</Link>
+        {user
+          ?
+          <span>
+            <em>{user.name} logged in</em><button onClick={handleLogout}>logout</button>
+          </span>
+          : <div></div>
+        }
+      </div>
+
+      <h2>blog app</h2>
       { notification !== null ?
         <Notification message={notification} flag={'notification'} /> :
         <Notification message={error} flag={'error'} />
       }
-
-      <p>{user.name} logged in</p>
-      <p><button onClick={handleLogout}>logout</button></p>
 
       <Routes>
         <Route path="/users/:id" element={<User user={matchedUser} />} />

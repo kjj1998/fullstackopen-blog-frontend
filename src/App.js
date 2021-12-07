@@ -8,6 +8,8 @@ import {
 import Notification from './components/Notification'
 import LoginForm from './components/LoginForm'
 import BasicInfo from './components/BasicInfo'
+//import BlogView from './components/BlogView'
+import Blog from './components/Blog'
 
 import { setNotification } from './reducers/notificationReducer'
 import { useSelector, useDispatch } from 'react-redux'
@@ -96,6 +98,11 @@ const App = () => {
     ? allUsers.find(u => u.id === userIDMatch.params.id)
     : null
 
+  const blogIDMatch = useMatch('/blogs/:id')
+  const matchedBlog = blogIDMatch
+    ? blogs.find(b => b.id === blogIDMatch.params.id)
+    : {}
+
   if (!user) {
     return (
       <div>
@@ -122,6 +129,12 @@ const App = () => {
 
       <Routes>
         <Route path="/users/:id" element={<User user={matchedUser} />} />
+        <Route path="/blogs/:id"
+          element={<Blog
+            blog={matchedBlog}
+            handleLike={handleLike}
+            handleRemove={handleRemove}
+            own={matchedBlog.user.username === user.username} />} />
         <Route path="/users" element={<BasicInfo allUsers={allUsers}/>} />
         <Route path="/" element={
           <IndexPage

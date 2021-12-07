@@ -1,25 +1,34 @@
 /* eslint-disable linebreak-style */
 import React from 'react'
+import { Link } from 'react-router-dom'
 
-import Blog from './Blog'
 import NewBlog from './NewBlog'
 import Togglable from './Togglable'
 
-const IndexPage = ({ blogFormRef, createBlog, handleLike, handleRemove, user, blogs }) => {
+const IndexPage = ({ blogFormRef, createBlog, blogs }) => {
+
+  const blogStyle = {
+    paddingTop: 10,
+    paddingLeft: 2,
+    border: 'solid',
+    borderWidth: 1,
+    marginBottom: 5
+  }
+
   return (
     <div>
       <Togglable buttonLabel='create new blog'  ref={blogFormRef}>
         <NewBlog createBlog={createBlog} />
       </Togglable>
-      {blogs.map(blog =>
-        <Blog
-          key={blog.id}
-          blog={blog}
-          handleLike={handleLike}
-          handleRemove={handleRemove}
-          own={user.username===blog.user.username}
-        />
-      )}
+      {blogs.map(blog => {
+        return (
+          <div style={blogStyle} key={blog.id}>
+            <Link to={`/blogs/${blog.id}`} >
+              {blog.title} {blog.author}
+            </Link>
+          </div>
+        )
+      })}
     </div>
   )
 }

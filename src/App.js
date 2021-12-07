@@ -2,7 +2,7 @@
 import React, { useEffect } from 'react'
 import {
   Routes , Route,
-  useMatch
+  useMatch, useNavigate
 } from 'react-router-dom'
 
 import Notification from './components/Notification'
@@ -22,6 +22,7 @@ import User from './components/User'
 
 const App = () => {
   const dispatch = useDispatch()
+  const navigate = useNavigate()
 
   const notification = useSelector(state => state.notification)
   const blogs = useSelector(state => state.blogs)
@@ -87,6 +88,7 @@ const App = () => {
       const blogToRemove = blogs.find(b => b.id === id)
       dispatch(removeBlog(blogToRemove))
       dispatch(setNotification(`${blogToRemove.title} by ${blogToRemove.author} removed!`))
+      navigate('/')
     } catch(exception) {
       console.log(error)
       dispatch(setError('Blog not removed'))
@@ -101,7 +103,7 @@ const App = () => {
   const blogIDMatch = useMatch('/blogs/:id')
   const matchedBlog = blogIDMatch
     ? blogs.find(b => b.id === blogIDMatch.params.id)
-    : {}
+    : { title: 'null', author: 'null', url: 'null' }
 
   if (!user) {
     return (
@@ -134,7 +136,7 @@ const App = () => {
             blog={matchedBlog}
             handleLike={handleLike}
             handleRemove={handleRemove}
-            own={matchedBlog.user.username === user.username} />} />
+            loggedInUser={user} />} />
         <Route path="/users" element={<BasicInfo allUsers={allUsers}/>} />
         <Route path="/" element={
           <IndexPage

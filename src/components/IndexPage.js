@@ -1,9 +1,11 @@
 /* eslint-disable linebreak-style */
 import React from 'react'
 import { Link } from 'react-router-dom'
+import { Table } from 'react-bootstrap'
 
 import NewBlog from './NewBlog'
 import Togglable from './Togglable'
+
 
 const IndexPage = ({ blogFormRef, createBlog, blogs }) => {
 
@@ -20,15 +22,19 @@ const IndexPage = ({ blogFormRef, createBlog, blogs }) => {
       <Togglable buttonLabel='create new blog'  ref={blogFormRef}>
         <NewBlog createBlog={createBlog} />
       </Togglable>
-      {blogs.map(blog => {
-        return (
-          <div style={blogStyle} key={blog.id}>
-            <Link to={`/blogs/${blog.id}`} >
-              {blog.title} {blog.author}
-            </Link>
-          </div>
-        )
-      })}
+      <Table striped>
+        <tbody>
+          {blogs.map(blog =>
+            <tr key={blog.id}>
+              <td style={blogStyle}>
+                <Link to={`/blogs/${blog.id}`} >
+                  {blog.title} {blog.author}
+                </Link>
+              </td>
+            </tr>
+          )}
+        </tbody>
+      </Table>
     </div>
   )
 }

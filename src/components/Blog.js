@@ -1,11 +1,9 @@
 /* eslint-disable linebreak-style */
 import React, { useState } from 'react'
 import PropTypes from 'prop-types'
-import { useNavigate } from 'react-router'
 
 const Blog = ({ blog, handleLike, handleRemove, loggedInUser, addComment }) => {
   const [comment, setComment ] = useState('')
-  const navigate = useNavigate()
   if (!blog)
     return null
 
@@ -16,7 +14,6 @@ const Blog = ({ blog, handleLike, handleRemove, loggedInUser, addComment }) => {
 
     addComment(blog.id, comment)
     setComment('')
-    navigate(`/blogs/${blog.id}`)
   }
 
   return (
